@@ -6,8 +6,6 @@ Console.ForegroundColor = ConsoleColor.White;
 string[] allFoundMatches;
 bool wasStringIncorrectAtLeastOnce = false;
 
-
-
 do
 {
     //userInput = "29535123p48723487597645723645"; // Test string
@@ -104,17 +102,13 @@ ulong AddsAllFoundMatches(string[] allFoundMatches)
 void PrintsResult(string userInput, string[] allFoundMatches, ulong totalSum)
 {
     int stringRow = 1;
-    int tempValue = 0;
-    //for (int i = 0; i < allFoundMatches.Length; i++)
-    //{
-    //    Console.WriteLine(allFoundMatches[i]);
-    //}
+    int HoldsStringPosition = 0;
 
     for (int indexLocation = 0; indexLocation < allFoundMatches.Length; indexLocation++)
     {
         if (userInput.Contains(allFoundMatches[indexLocation], StringComparison.OrdinalIgnoreCase))
         {
-            for (int currentPositionInString = tempValue; currentPositionInString < userInput.Length; currentPositionInString++)
+            for (int currentPositionInString = HoldsStringPosition; currentPositionInString < userInput.Length; currentPositionInString++)
             {
                 if (userInput.Substring(currentPositionInString, allFoundMatches[indexLocation].Length).Contains(allFoundMatches[indexLocation], StringComparison.OrdinalIgnoreCase))
                 {
@@ -124,7 +118,7 @@ void PrintsResult(string userInput, string[] allFoundMatches, ulong totalSum)
                     Console.ForegroundColor = ConsoleColor.Gray;
                     Console.WriteLine(userInput.Substring(currentPositionInString + allFoundMatches[indexLocation].Length, userInput.Length - (currentPositionInString + allFoundMatches[indexLocation].Length)));
                     stringRow++;
-                    tempValue = currentPositionInString+1;
+                    HoldsStringPosition = currentPositionInString+1;
                     break;
                 }
             }
