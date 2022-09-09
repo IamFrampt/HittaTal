@@ -1,47 +1,112 @@
-﻿Console.Write("Inmatning: ");
-string input = "29535123p48723487597645723645";
-Console.WriteLine();
-
+﻿using System.Text.RegularExpressions;
+Regex regexOnlyNumbers = new Regex("^[0-9 ]*$");
+string userInput = string.Empty;
 UInt64 totalSum = 0;
-string tempWord = string.Empty;
-bool isLetterPresent = false;
-int row = 1;
-CheckIfSameDigit(input);
+Console.ForegroundColor = ConsoleColor.White;
+string[] allFoundMatches;
 
-Console.WriteLine();
-Console.WriteLine("Totalt = " + totalSum);
-
-
-void CheckIfSameDigit(string input)
+do
 {
-    for (int i = 0; i < input.Length; i++)
-    {
-        for (int j = i + 1; j < input.Length; j++)
-        {
-            if (input[i] == input[j])
-            {
-                tempWord = input.Substring(i, j - i + 1);
-                isLetterPresent = tempWord.Any(c => char.IsLetter(c));
+    Console.Write("Inmatning: ");
+    userInput = Console.ReadLine();
+    //userInput = "29535123p48723487597645723645"; // Test string
+    Console.WriteLine();
 
-                if (!isLetterPresent)
+    if (!IsStringValid(userInput))
+        Console.Clear();
+
+} while (!IsStringValid(userInput));
+
+allFoundMatches = CheckingForMatchingNumbers(userInput);
+totalSum = AddsAllFoundMatches(CheckingForMatchingNumbers(userInput));
+
+PrintsResult(userInput, allFoundMatches, totalSum);
+
+bool IsStringValid(string userInput)
+{
+    int indexPosition = 0;
+    while (indexPosition < userInput.Length)
+    {
+        for (int potentialTwinNumber = indexPosition + 1; potentialTwinNumber < userInput.Length; potentialTwinNumber++)
+        {
+            if (userInput[indexPosition] == userInput[potentialTwinNumber] &&
+                regexOnlyNumbers.IsMatch(userInput.Substring(indexPosition, potentialTwinNumber - indexPosition)))
+            {
+                return true;
+            }
+        }
+        indexPosition++;
+    }
+    return false;
+}
+
+string[] CheckingForMatchingNumbers(string userInput)
+{
+    string[] allFoundMatches = new string[userInput.Length];
+
+    for (int currentNumber = 0; currentNumber < userInput.Length; currentNumber++)
+    {
+        for (int secondNumber = currentNumber + 1; secondNumber < userInput.Length; secondNumber++)
+        {
+            if (userInput.Substring(secondNumber, userInput.Length - secondNumber).Contains(userInput[currentNumber]) &&
+                regexOnlyNumbers.IsMatch(userInput.Substring(currentNumber, secondNumber - currentNumber)))
+            {
+                if (userInput[currentNumber] == userInput[secondNumber])
                 {
-                    totalSum += Convert.ToUInt64(tempWord);
-                    Console.Write($"{row.ToString().PadRight(3)}: {input.Substring(0, i)}");
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write(input.Substring(i, j - i + 1));
-                    tempWord = input.Substring(i, j - i + 1);
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.WriteLine(input.Substring(j + 1, input.Length - (j + 1)));
-                    row++;
+                    allFoundMatches[currentNumber] = userInput.Substring(currentNumber, secondNumber - currentNumber + 1);
+                    break;
                 }
+            }
+            else
                 break;
+        }
+    }
+
+    for (int i = 0; i < allFoundMatches.Length; i++)
+    {
+        if (allFoundMatches[i] == null)
+        {
+            allFoundMatches = allFoundMatches.Where((source, index) => index != i).ToArray();
+            i--;
+        }
+    }
+
+    return allFoundMatches;
+}
+
+ulong AddsAllFoundMatches(string[] allFoundMatches)
+{
+    ulong totalSum = 0;
+    for (int indexLocation = 0; indexLocation < allFoundMatches.Length; indexLocation++)
+    {
+        totalSum += Convert.ToUInt64(allFoundMatches[indexLocation]);
+    }
+    return totalSum;
+}
+
+void PrintsResult(string userInput, string[] allFoundMatches, ulong totalSum)
+{
+    int stringRow = 1;
+
+    for (int indexLocation = 0; indexLocation < allFoundMatches.Length; indexLocation++)
+    {
+        if (userInput.Contains(allFoundMatches[indexLocation], StringComparison.OrdinalIgnoreCase))
+        {
+            for (int currentPositionInString = 0; currentPositionInString < userInput.Length; currentPositionInString++)
+            {
+                if (userInput.Substring(currentPositionInString, allFoundMatches[indexLocation].Length).Contains(allFoundMatches[indexLocation], StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.Write($"{stringRow.ToString().PadRight(3)}: {userInput.Substring(0, currentPositionInString)}");
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.Write(userInput.Substring(currentPositionInString, allFoundMatches[indexLocation].Length));
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine(userInput.Substring(currentPositionInString + allFoundMatches[indexLocation].Length, userInput.Length - (currentPositionInString + allFoundMatches[indexLocation].Length)));
+                    stringRow++;
+                    break;
+                }
             }
         }
     }
-}
-
-
-void PrintResultOfInput()
-{
-
+    Console.WriteLine();
+    Console.WriteLine($"Totalt = {totalSum}");
 }
