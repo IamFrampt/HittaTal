@@ -1,21 +1,37 @@
 ﻿using System.Text.RegularExpressions;
-Regex regexOnlyNumbers = new Regex("^[0-9 ]*$");
+Regex regexOnlyNumbers = new Regex("^[0-9]*$");
 string userInput = string.Empty;
 UInt64 totalSum = 0;
 Console.ForegroundColor = ConsoleColor.White;
 string[] allFoundMatches;
+bool wasStringIncorrectAtLeastOnce = false;
+
+
 
 do
 {
+    //userInput = "29535123p48723487597645723645"; // Test string
+
     Console.Write("Inmatning: ");
     userInput = Console.ReadLine();
-    //userInput = "29535123p48723487597645723645"; // Test string
     Console.WriteLine();
 
     if (!IsStringValid(userInput))
+    {
+        wasStringIncorrectAtLeastOnce = true;
         Console.Clear();
+        Console.WriteLine($"Den inmatade strängen är ogiltig.");
+        Console.WriteLine();
+    }
 
 } while (!IsStringValid(userInput));
+
+if (wasStringIncorrectAtLeastOnce)
+{
+    Console.Clear();
+    Console.WriteLine($"Inmatning: {userInput}");
+    Console.WriteLine();
+}
 
 allFoundMatches = CheckingForMatchingNumbers(userInput);
 totalSum = AddsAllFoundMatches(CheckingForMatchingNumbers(userInput));
@@ -49,8 +65,9 @@ string[] CheckingForMatchingNumbers(string userInput)
         for (int secondNumber = currentNumber + 1; secondNumber < userInput.Length; secondNumber++)
         {
             if (userInput.Substring(secondNumber, userInput.Length - secondNumber).Contains(userInput[currentNumber]) &&
-                regexOnlyNumbers.IsMatch(userInput.Substring(currentNumber, secondNumber - currentNumber)))
+                !char.IsLetter(userInput[currentNumber]) && !char.IsLetter(userInput[secondNumber]))
             {
+                //regexOnlyNumbers.IsMatch(userInput.Substring(currentNumber, userInput.Length - secondNumber))
                 if (userInput[currentNumber] == userInput[secondNumber])
                 {
                     allFoundMatches[currentNumber] = userInput.Substring(currentNumber, secondNumber - currentNumber + 1);
@@ -87,12 +104,17 @@ ulong AddsAllFoundMatches(string[] allFoundMatches)
 void PrintsResult(string userInput, string[] allFoundMatches, ulong totalSum)
 {
     int stringRow = 1;
+    int tempValue = 0;
+    //for (int i = 0; i < allFoundMatches.Length; i++)
+    //{
+    //    Console.WriteLine(allFoundMatches[i]);
+    //}
 
     for (int indexLocation = 0; indexLocation < allFoundMatches.Length; indexLocation++)
     {
         if (userInput.Contains(allFoundMatches[indexLocation], StringComparison.OrdinalIgnoreCase))
         {
-            for (int currentPositionInString = 0; currentPositionInString < userInput.Length; currentPositionInString++)
+            for (int currentPositionInString = tempValue; currentPositionInString < userInput.Length; currentPositionInString++)
             {
                 if (userInput.Substring(currentPositionInString, allFoundMatches[indexLocation].Length).Contains(allFoundMatches[indexLocation], StringComparison.OrdinalIgnoreCase))
                 {
@@ -102,11 +124,14 @@ void PrintsResult(string userInput, string[] allFoundMatches, ulong totalSum)
                     Console.ForegroundColor = ConsoleColor.Gray;
                     Console.WriteLine(userInput.Substring(currentPositionInString + allFoundMatches[indexLocation].Length, userInput.Length - (currentPositionInString + allFoundMatches[indexLocation].Length)));
                     stringRow++;
+                    tempValue = currentPositionInString+1;
                     break;
                 }
             }
         }
     }
+
+
     Console.WriteLine();
     Console.WriteLine($"Totalt = {totalSum}");
 }
