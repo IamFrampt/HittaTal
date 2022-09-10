@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-Regex regexOnlyNumbers = new Regex("^[0-9]*$");
-string userInput = string.Empty;
+﻿string userInput = string.Empty;
 UInt64 totalSum = 0;
 Console.ForegroundColor = ConsoleColor.White;
 string[] allFoundMatches;
@@ -9,6 +7,7 @@ bool wasStringIncorrectAtLeastOnce = false;
 do
 {
     //userInput = "29535123p48723487597645723645"; // Test string
+    //%555445%%%%554455&55445544554455n554555
 
     Console.Write("Inmatning: ");
     userInput = Console.ReadLine();
@@ -38,18 +37,13 @@ PrintsResult(userInput, allFoundMatches, totalSum);
 
 bool IsStringValid(string userInput)
 {
-    int indexPosition = 0;
-    while (indexPosition < userInput.Length)
+    for (int currentIndex = 0; currentIndex < userInput.Length; currentIndex++)
     {
-        for (int potentialTwinNumber = indexPosition + 1; potentialTwinNumber < userInput.Length; potentialTwinNumber++)
+        if (userInput.Substring(currentIndex+1, userInput.Length - currentIndex-1).Contains(userInput[currentIndex]) &&
+            !userInput.Substring(currentIndex, userInput.Length - currentIndex).Any(c => char.IsLetter(c)))
         {
-            if (userInput[indexPosition] == userInput[potentialTwinNumber] &&
-                regexOnlyNumbers.IsMatch(userInput.Substring(indexPosition, potentialTwinNumber - indexPosition)))
-            {
-                return true;
-            }
+            return true;
         }
-        indexPosition++;
     }
     return false;
 }
@@ -63,9 +57,8 @@ string[] CheckingForMatchingNumbers(string userInput)
         for (int secondNumber = currentNumber + 1; secondNumber < userInput.Length; secondNumber++)
         {
             if (userInput.Substring(secondNumber, userInput.Length - secondNumber).Contains(userInput[currentNumber]) &&
-                !char.IsLetter(userInput[currentNumber]) && !char.IsLetter(userInput[secondNumber]))
+                char.IsDigit(userInput[secondNumber]))
             {
-                //regexOnlyNumbers.IsMatch(userInput.Substring(currentNumber, userInput.Length - secondNumber))
                 if (userInput[currentNumber] == userInput[secondNumber])
                 {
                     allFoundMatches[currentNumber] = userInput.Substring(currentNumber, secondNumber - currentNumber + 1);
@@ -118,7 +111,7 @@ void PrintsResult(string userInput, string[] allFoundMatches, ulong totalSum)
                     Console.ForegroundColor = ConsoleColor.Gray;
                     Console.WriteLine(userInput.Substring(currentPositionInString + allFoundMatches[indexLocation].Length, userInput.Length - (currentPositionInString + allFoundMatches[indexLocation].Length)));
                     stringRow++;
-                    HoldsStringPosition = currentPositionInString+1;
+                    HoldsStringPosition = currentPositionInString + 1;
                     break;
                 }
             }
