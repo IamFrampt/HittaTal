@@ -56,8 +56,8 @@ string[] CheckingForMatchingNumbers(string userInput)
     {
         for (int secondNumber = currentNumber + 1; secondNumber < userInput.Length; secondNumber++)
         {
-            if (userInput.Substring(secondNumber, userInput.Length - secondNumber).Contains(userInput[currentNumber]) &&
-                char.IsDigit(userInput[secondNumber]))
+            if (char.IsDigit(userInput[secondNumber]) && char.IsDigit(userInput[currentNumber]) &&
+                userInput.Substring(secondNumber, userInput.Length - secondNumber).Contains(userInput[currentNumber]))
             {
                 if (userInput[currentNumber] == userInput[secondNumber])
                 {
