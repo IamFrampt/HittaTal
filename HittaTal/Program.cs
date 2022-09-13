@@ -1,15 +1,15 @@
 ﻿string userInput = string.Empty;
-UInt64 totalSum = 0;
-Console.ForegroundColor = ConsoleColor.White;
+ulong totalSum;
 string[] allFoundMatches;
 bool wasStringIncorrectAtLeastOnce = false;
+Console.ForegroundColor = ConsoleColor.White;
+
+
+//------------------Main------------------
 
 do
 {
-    //userInput = "29535123p48723487597645723645"; // Test string
-    //%555445%%%%554455&55445544554455n554555
-
-    Console.Write("Inmatning: ");
+    Console.Write("User input: ");
     userInput = Console.ReadLine();
     Console.WriteLine();
 
@@ -17,7 +17,7 @@ do
     {
         wasStringIncorrectAtLeastOnce = true;
         Console.Clear();
-        Console.WriteLine($"Den inmatade strängen är ogiltig.");
+        Console.WriteLine($"Input was not valid!, Try again.");
         Console.WriteLine();
     }
 
@@ -26,27 +26,17 @@ do
 if (wasStringIncorrectAtLeastOnce)
 {
     Console.Clear();
-    Console.WriteLine($"Inmatning: {userInput}");
+    Console.WriteLine($"User input: {userInput}");
     Console.WriteLine();
 }
 
 allFoundMatches = CheckingForMatchingNumbers(userInput);
-totalSum = AddsAllFoundMatches(CheckingForMatchingNumbers(userInput));
+totalSum = AddsAllFoundMatches(allFoundMatches);
 
 PrintsResult(userInput, allFoundMatches, totalSum);
 
-bool IsStringValid(string userInput)
-{
-    for (int currentIndex = 0; currentIndex < userInput.Length; currentIndex++)
-    {
-        if (userInput.Substring(currentIndex+1, userInput.Length - currentIndex-1).Contains(userInput[currentIndex]) &&
-            !userInput.Substring(currentIndex, userInput.Length - currentIndex).Any(c => char.IsLetter(c)))
-        {
-            return true;
-        }
-    }
-    return false;
-}
+
+//------------------Metoder------------------
 
 string[] CheckingForMatchingNumbers(string userInput)
 {
@@ -56,7 +46,7 @@ string[] CheckingForMatchingNumbers(string userInput)
     {
         for (int secondNumber = currentNumber + 1; secondNumber < userInput.Length; secondNumber++)
         {
-            if (char.IsDigit(userInput[secondNumber]) && char.IsDigit(userInput[currentNumber]) &&
+            if (char.IsDigit(userInput[currentNumber]) && char.IsDigit(userInput[secondNumber]) &&
                 userInput.Substring(secondNumber, userInput.Length - secondNumber).Contains(userInput[currentNumber]))
             {
                 if (userInput[currentNumber] == userInput[secondNumber])
@@ -70,6 +60,7 @@ string[] CheckingForMatchingNumbers(string userInput)
         }
     }
 
+    //Tar bort alla index i arrayen som inte har något värde
     for (int i = 0; i < allFoundMatches.Length; i++)
     {
         if (allFoundMatches[i] == null)
@@ -82,13 +73,29 @@ string[] CheckingForMatchingNumbers(string userInput)
     return allFoundMatches;
 }
 
+bool IsStringValid(string userInput)
+{
+    for (int currentIndex = 0; currentIndex < userInput.Length; currentIndex++)
+    {
+        if (userInput.Substring(currentIndex + 1, userInput.Length - currentIndex - 1).Contains(userInput[currentIndex]) &&
+            !userInput.Substring(currentIndex, userInput.Length - currentIndex).Any(c => char.IsLetter(c)))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 ulong AddsAllFoundMatches(string[] allFoundMatches)
 {
     ulong totalSum = 0;
-    for (int indexLocation = 0; indexLocation < allFoundMatches.Length; indexLocation++)
+
+    for (int i = 0; i < allFoundMatches.Length; i++)
     {
-        totalSum += Convert.ToUInt64(allFoundMatches[indexLocation]);
+        totalSum += Convert.ToUInt64(allFoundMatches[i]);
     }
+
     return totalSum;
 }
 
@@ -99,26 +106,24 @@ void PrintsResult(string userInput, string[] allFoundMatches, ulong totalSum)
 
     for (int indexLocation = 0; indexLocation < allFoundMatches.Length; indexLocation++)
     {
-        if (userInput.Contains(allFoundMatches[indexLocation], StringComparison.OrdinalIgnoreCase))
+        for (int currentPositionInString = HoldsStringPosition; currentPositionInString < userInput.Length; currentPositionInString++)
         {
-            for (int currentPositionInString = HoldsStringPosition; currentPositionInString < userInput.Length; currentPositionInString++)
+            if (userInput.Substring(currentPositionInString, allFoundMatches[indexLocation].Length).Contains(allFoundMatches[indexLocation]))
             {
-                if (userInput.Substring(currentPositionInString, allFoundMatches[indexLocation].Length).Contains(allFoundMatches[indexLocation], StringComparison.OrdinalIgnoreCase))
-                {
-                    Console.Write($"{stringRow.ToString().PadRight(3)}: {userInput.Substring(0, currentPositionInString)}");
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.Write(userInput.Substring(currentPositionInString, allFoundMatches[indexLocation].Length));
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.WriteLine(userInput.Substring(currentPositionInString + allFoundMatches[indexLocation].Length, userInput.Length - (currentPositionInString + allFoundMatches[indexLocation].Length)));
-                    stringRow++;
-                    HoldsStringPosition = currentPositionInString + 1;
-                    break;
-                }
+                Console.Write($"{stringRow.ToString().PadRight(3)}: {userInput.Substring(0, currentPositionInString)}");
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.Write(userInput.Substring(currentPositionInString, allFoundMatches[indexLocation].Length));
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine(userInput.Substring(currentPositionInString + allFoundMatches[indexLocation].Length, userInput.Length - (currentPositionInString + allFoundMatches[indexLocation].Length)));
+               
+                stringRow++;
+                HoldsStringPosition = currentPositionInString + 1;
+                
+                break;
             }
         }
     }
 
-
     Console.WriteLine();
-    Console.WriteLine($"Totalt = {totalSum}");
+    Console.WriteLine($"Total = {totalSum}");
 }
