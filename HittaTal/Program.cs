@@ -4,7 +4,6 @@ string[] allFoundMatches;
 bool wasStringIncorrectAtLeastOnce = false;
 Console.ForegroundColor = ConsoleColor.White;
 
-
 //------------------Main------------------
 
 do
@@ -34,7 +33,6 @@ allFoundMatches = CheckingForMatchingNumbers(userInput);
 totalSum = AddsAllFoundMatches(allFoundMatches);
 
 PrintsResult(userInput, allFoundMatches, totalSum);
-
 
 //------------------Metoder------------------
 
@@ -77,7 +75,7 @@ bool IsStringValid(string userInput)
 {
     for (int currentIndex = 0; currentIndex < userInput.Length; currentIndex++)
     {
-        if (userInput.Substring(currentIndex + 1, userInput.Length - currentIndex - 1).Contains(userInput[currentIndex]) &&
+        if (char.IsDigit(userInput[currentIndex]) && userInput.Substring(currentIndex + 1, userInput.Length - currentIndex - 1).Contains(userInput[currentIndex]) &&
             !userInput.Substring(currentIndex, userInput.Length - currentIndex).Any(c => char.IsLetter(c)))
         {
             return true;
@@ -104,21 +102,21 @@ void PrintsResult(string userInput, string[] allFoundMatches, ulong totalSum)
     int stringRow = 1;
     int HoldsStringPosition = 0;
 
-    for (int indexLocation = 0; indexLocation < allFoundMatches.Length; indexLocation++)
+    foreach (string match in allFoundMatches)
     {
         for (int currentPositionInString = HoldsStringPosition; currentPositionInString < userInput.Length; currentPositionInString++)
         {
-            if (userInput.Substring(currentPositionInString, allFoundMatches[indexLocation].Length).Contains(allFoundMatches[indexLocation]))
+            if (userInput.Substring(currentPositionInString, match.Length).Contains(match))
             {
                 Console.Write($"{stringRow.ToString().PadRight(3)}: {userInput.Substring(0, currentPositionInString)}");
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.Write(userInput.Substring(currentPositionInString, allFoundMatches[indexLocation].Length));
+                Console.Write(userInput.Substring(currentPositionInString, match.Length));
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine(userInput.Substring(currentPositionInString + allFoundMatches[indexLocation].Length, userInput.Length - (currentPositionInString + allFoundMatches[indexLocation].Length)));
-               
+                Console.WriteLine(userInput.Substring(currentPositionInString + match.Length, userInput.Length - (currentPositionInString + match.Length)));
+
                 stringRow++;
                 HoldsStringPosition = currentPositionInString + 1;
-                
+
                 break;
             }
         }
