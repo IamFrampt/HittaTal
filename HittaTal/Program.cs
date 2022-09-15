@@ -2,6 +2,7 @@
 ulong totalSum;
 string[] allFoundMatches;
 bool wasStringIncorrectAtLeastOnce = false;
+bool isSumToHigh = false;
 Console.ForegroundColor = ConsoleColor.White;
 
 //------------------Main------------------
@@ -87,14 +88,22 @@ bool IsStringValid(string userInput)
 
 ulong AddsAllFoundMatches(string[] allFoundMatches)
 {
-    ulong totalSum = 0;
-
-    for (int i = 0; i < allFoundMatches.Length; i++)
+    try
     {
-        totalSum += Convert.ToUInt64(allFoundMatches[i]);
-    }
+        ulong totalSum = 0;
 
-    return totalSum;
+        for (int i = 0; i < allFoundMatches.Length; i++)
+        {
+            totalSum += Convert.ToUInt64(allFoundMatches[i]);
+        }
+
+        return totalSum;
+    }
+    catch
+    {
+        isSumToHigh = true;
+        return 0;
+    }
 }
 
 void PrintsResult(string userInput, string[] allFoundMatches, ulong totalSum)
@@ -121,7 +130,15 @@ void PrintsResult(string userInput, string[] allFoundMatches, ulong totalSum)
             }
         }
     }
+    if (isSumToHigh)
+    {
+        Console.WriteLine();
+        Console.WriteLine("Total sum was to high, but here are all found matches.");
+    }
+    else
+    {
+        Console.WriteLine();
+        Console.WriteLine($"Total = {totalSum}");
+    }
 
-    Console.WriteLine();
-    Console.WriteLine($"Total = {totalSum}");
 }
