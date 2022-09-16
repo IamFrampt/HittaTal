@@ -1,6 +1,6 @@
 ﻿string userInput = string.Empty;
 ulong totalSum;
-string[] allFoundMatches;
+List<string> allFoundMatches = new List<string>();
 bool wasStringIncorrectAtLeastOnce = false;
 bool isSumToHigh = false;
 Console.ForegroundColor = ConsoleColor.White;
@@ -12,45 +12,37 @@ do
     Console.Write("User input: ");
     userInput = Console.ReadLine();
     Console.WriteLine();
+    //%%hej1234554321hej%%123321
 
-    if (!IsStringValid(userInput))
+    allFoundMatches = CheckingForMatchingNumbers(userInput);
+    totalSum = AddsAllFoundMatches(allFoundMatches);
+    PrintsResult(userInput, allFoundMatches, totalSum);
+
+    if (allFoundMatches.Count == 0)
     {
-        wasStringIncorrectAtLeastOnce = true;
         Console.Clear();
-        Console.WriteLine($"Input was not valid!, Try again.");
+        Console.WriteLine("String was invalid. Try a new one.");
         Console.WriteLine();
     }
 
-} while (!IsStringValid(userInput));
-
-if (wasStringIncorrectAtLeastOnce)
-{
-    Console.Clear();
-    Console.WriteLine($"User input: {userInput}");
-    Console.WriteLine();
 }
-
-allFoundMatches = CheckingForMatchingNumbers(userInput);
-totalSum = AddsAllFoundMatches(allFoundMatches);
-
-PrintsResult(userInput, allFoundMatches, totalSum);
+while (allFoundMatches.Count == 0);
 
 //------------------Metoder------------------
 
-string[] CheckingForMatchingNumbers(string userInput)
+List<string> CheckingForMatchingNumbers(string userInput)
 {
-    string[] allFoundMatches = new string[userInput.Length];
+    List<string> allFoundMatches = new List<string>();
 
     for (int currentNumber = 0; currentNumber < userInput.Length; currentNumber++)
     {
         for (int secondNumber = currentNumber + 1; secondNumber < userInput.Length; secondNumber++)
         {
-            if (char.IsDigit(userInput[currentNumber]) && char.IsDigit(userInput[secondNumber]) &&
-                userInput.Substring(secondNumber, userInput.Length - secondNumber).Contains(userInput[currentNumber]))
+            if (char.IsNumber(userInput[currentNumber]) && char.IsNumber(userInput[secondNumber]))
             {
-                if (userInput[currentNumber] == userInput[secondNumber])
+                if (IsStringValid(userInput, currentNumber, secondNumber))
                 {
-                    allFoundMatches[currentNumber] = userInput.Substring(currentNumber, secondNumber - currentNumber + 1);
+                    allFoundMatches.Add(userInput.Substring(currentNumber, secondNumber - currentNumber + 1));
                     break;
                 }
             }
@@ -59,40 +51,32 @@ string[] CheckingForMatchingNumbers(string userInput)
         }
     }
 
-    //Tar bort alla index i arrayen som inte har något värde
-    for (int i = 0; i < allFoundMatches.Length; i++)
-    {
-        if (allFoundMatches[i] == null)
-        {
-            allFoundMatches = allFoundMatches.Where((source, index) => index != i).ToArray();
-            i--;
-        }
-    }
-
     return allFoundMatches;
 }
 
-bool IsStringValid(string userInput)
+bool IsStringValid(string userInput, int currentNumber, int secondNumber)
 {
-    for (int currentIndex = 0; currentIndex < userInput.Length; currentIndex++)
+    if (char.IsDigit(userInput[currentNumber]) && userInput.Substring(secondNumber, userInput.Length - secondNumber).Contains(userInput[currentNumber]))
     {
-        if (char.IsDigit(userInput[currentIndex]) && userInput.Substring(currentIndex + 1, userInput.Length - currentIndex - 1).Contains(userInput[currentIndex]) &&
-            !userInput.Substring(currentIndex, userInput.Length - currentIndex).Any(c => char.IsLetter(c)))
+        if (!userInput.Substring(currentNumber, secondNumber - currentNumber).Any(c => char.IsLetter(c)))
         {
-            return true;
+            if (userInput[currentNumber] == userInput[secondNumber])
+            {
+                return true;
+            }
         }
     }
-
     return false;
+
 }
 
-ulong AddsAllFoundMatches(string[] allFoundMatches)
+ulong AddsAllFoundMatches(List<string> allFoundMatches)
 {
     try
     {
         ulong totalSum = 0;
 
-        for (int i = 0; i < allFoundMatches.Length; i++)
+        for (int i = 0; i < allFoundMatches.Count; i++)
         {
             totalSum += Convert.ToUInt64(allFoundMatches[i]);
         }
@@ -106,7 +90,7 @@ ulong AddsAllFoundMatches(string[] allFoundMatches)
     }
 }
 
-void PrintsResult(string userInput, string[] allFoundMatches, ulong totalSum)
+void PrintsResult(string userInput, List<string> allFoundMatches, ulong totalSum)
 {
     int stringRow = 1;
     int HoldsStringPosition = 0;
