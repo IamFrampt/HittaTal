@@ -59,20 +59,15 @@ bool IsStringValid(string userInput, int currentNumber, int secondNumber)
 {
     if (char.IsDigit(userInput[currentNumber]) && userInput.Substring(secondNumber, userInput.Length - secondNumber).Contains(userInput[currentNumber]))
     {
-        if (char.IsNumber(userInput[currentNumber]) && char.IsNumber(userInput[secondNumber]))
+        if (char.IsNumber(userInput[currentNumber]) && char.IsNumber(userInput[secondNumber])
+            && userInput.Substring(currentNumber, secondNumber - currentNumber).All(c => char.IsDigit(c))
+            && userInput[currentNumber] == userInput[secondNumber])
         {
-            if (!userInput.Substring(currentNumber, secondNumber - currentNumber).Any(c => char.IsLetter(c)))
-            {
-                if (userInput[currentNumber] == userInput[secondNumber])
-                {
-                    return true;
-                }
-            }
+            return true;
         }
     }
 
     return false;
-
 }
 
 ulong AddsAllFoundMatches(List<string> allFoundMatches)
