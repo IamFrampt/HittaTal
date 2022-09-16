@@ -36,60 +36,6 @@ PrintsResult(userInput, allFoundMatches, totalSum);
 
 //------------------Metoder------------------
 
-List<string> CheckingForMatchingNumbers(string userInput)
-{
-    List<string> allFoundMatches = new List<string>();
-
-    for (int currentNumber = 0; currentNumber < userInput.Length; currentNumber++)
-    {
-        for (int secondNumber = currentNumber + 1; secondNumber < userInput.Length; secondNumber++)
-        {
-            if (IsStringValid(userInput, currentNumber, secondNumber))
-            {
-                allFoundMatches.Add(userInput.Substring(currentNumber, secondNumber - currentNumber + 1));
-                break;
-            }
-        }
-    }
-
-    return allFoundMatches;
-}
-
-bool IsStringValid(string userInput, int currentNumber, int secondNumber)
-{
-    if (char.IsDigit(userInput[currentNumber]) && userInput.Substring(secondNumber, userInput.Length - secondNumber).Contains(userInput[currentNumber]))
-    {
-        if (char.IsNumber(userInput[currentNumber]) && char.IsNumber(userInput[secondNumber])
-            && userInput.Substring(currentNumber, secondNumber - currentNumber).All(c => char.IsDigit(c))
-            && userInput[currentNumber] == userInput[secondNumber])
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-ulong AddsAllFoundMatches(List<string> allFoundMatches)
-{
-    try
-    {
-        ulong totalSum = 0;
-
-        for (int i = 0; i < allFoundMatches.Count; i++)
-        {
-            totalSum += Convert.ToUInt64(allFoundMatches[i]);
-        }
-
-        return totalSum;
-    }
-    catch
-    {
-        isSumToHigh = true;
-        return 0;
-    }
-}
-
 void PrintsResult(string userInput, List<string> allFoundMatches, ulong totalSum)
 {
     int stringRow = 1;
@@ -124,5 +70,57 @@ void PrintsResult(string userInput, List<string> allFoundMatches, ulong totalSum
     {
         Console.WriteLine();
         Console.WriteLine($"Total = {totalSum}");
+    }
+}
+
+List<string> CheckingForMatchingNumbers(string userInput)
+{
+    List<string> allFoundMatches = new List<string>();
+
+    for (int currentNumber = 0; currentNumber < userInput.Length; currentNumber++)
+    {
+        for (int secondNumber = currentNumber + 1; secondNumber < userInput.Length; secondNumber++)
+        {
+            if (IsStringValid(userInput, currentNumber, secondNumber))
+            {
+                allFoundMatches.Add(userInput.Substring(currentNumber, secondNumber - currentNumber + 1));
+                break;
+            }
+        }
+    }
+
+    return allFoundMatches;
+}
+
+bool IsStringValid(string userInput, int currentNumber, int secondNumber)
+{
+    if (char.IsDigit(userInput[currentNumber]) && userInput.Substring(secondNumber, userInput.Length - secondNumber).Contains(userInput[currentNumber])
+            && char.IsNumber(userInput[currentNumber]) && char.IsNumber(userInput[secondNumber])
+            && userInput.Substring(currentNumber, secondNumber - currentNumber).All(c => char.IsDigit(c))
+            && userInput[currentNumber] == userInput[secondNumber])
+    {
+        return true;
+    }
+
+    return false;
+}
+
+ulong AddsAllFoundMatches(List<string> allFoundMatches)
+{
+    try
+    {
+        ulong totalSum = 0;
+
+        for (int i = 0; i < allFoundMatches.Count; i++)
+        {
+            totalSum += Convert.ToUInt64(allFoundMatches[i]);
+        }
+
+        return totalSum;
+    }
+    catch
+    {
+        isSumToHigh = true;
+        return 0;
     }
 }
