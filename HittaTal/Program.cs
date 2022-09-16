@@ -1,8 +1,8 @@
 ﻿string userInput = string.Empty;
 ulong totalSum;
 List<string> allFoundMatches = new List<string>();
-bool wasStringIncorrectAtLeastOnce = false;
 bool isSumToHigh = false;
+bool wasStringInvalidOnce = false;
 Console.ForegroundColor = ConsoleColor.White;
 
 //------------------Main------------------
@@ -12,21 +12,27 @@ do
     Console.Write("User input: ");
     userInput = Console.ReadLine();
     Console.WriteLine();
-    //%%hej1234554321hej%%123321
 
     allFoundMatches = CheckingForMatchingNumbers(userInput);
-    totalSum = AddsAllFoundMatches(allFoundMatches);
-    PrintsResult(userInput, allFoundMatches, totalSum);
 
     if (allFoundMatches.Count == 0)
     {
+        wasStringInvalidOnce = true;
         Console.Clear();
         Console.WriteLine("String was invalid. Try a new one.");
         Console.WriteLine();
     }
-
+    if (wasStringInvalidOnce && allFoundMatches.Count > 0)
+    {
+        Console.Clear();
+        Console.WriteLine($"User input: {userInput}");
+        Console.WriteLine();
+    }
 }
 while (allFoundMatches.Count == 0);
+
+totalSum = AddsAllFoundMatches(allFoundMatches);
+PrintsResult(userInput, allFoundMatches, totalSum);
 
 //------------------Metoder------------------
 
@@ -38,16 +44,11 @@ List<string> CheckingForMatchingNumbers(string userInput)
     {
         for (int secondNumber = currentNumber + 1; secondNumber < userInput.Length; secondNumber++)
         {
-            if (char.IsNumber(userInput[currentNumber]) && char.IsNumber(userInput[secondNumber]))
+            if (IsStringValid(userInput, currentNumber, secondNumber))
             {
-                if (IsStringValid(userInput, currentNumber, secondNumber))
-                {
-                    allFoundMatches.Add(userInput.Substring(currentNumber, secondNumber - currentNumber + 1));
-                    break;
-                }
-            }
-            else
+                allFoundMatches.Add(userInput.Substring(currentNumber, secondNumber - currentNumber + 1));
                 break;
+            }
         }
     }
 
@@ -58,14 +59,18 @@ bool IsStringValid(string userInput, int currentNumber, int secondNumber)
 {
     if (char.IsDigit(userInput[currentNumber]) && userInput.Substring(secondNumber, userInput.Length - secondNumber).Contains(userInput[currentNumber]))
     {
-        if (!userInput.Substring(currentNumber, secondNumber - currentNumber).Any(c => char.IsLetter(c)))
+        if (char.IsNumber(userInput[currentNumber]) && char.IsNumber(userInput[secondNumber]))
         {
-            if (userInput[currentNumber] == userInput[secondNumber])
+            if (!userInput.Substring(currentNumber, secondNumber - currentNumber).Any(c => char.IsLetter(c)))
             {
-                return true;
+                if (userInput[currentNumber] == userInput[secondNumber])
+                {
+                    return true;
+                }
             }
         }
     }
+
     return false;
 
 }
@@ -114,15 +119,15 @@ void PrintsResult(string userInput, List<string> allFoundMatches, ulong totalSum
             }
         }
     }
+
     if (isSumToHigh)
     {
         Console.WriteLine();
-        Console.WriteLine("Total sum was to high, but here are all found matches.");
+        Console.WriteLine("Total sum was above max value! Here are all found matches.");
     }
     else
     {
         Console.WriteLine();
         Console.WriteLine($"Total = {totalSum}");
     }
-
 }
